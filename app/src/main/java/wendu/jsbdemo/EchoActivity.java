@@ -22,7 +22,8 @@ public class EchoActivity extends AppCompatActivity {
         final EditText editText= (EditText) findViewById(R.id.edit);
         Button  echoHandlerBtn= (Button) findViewById(R.id.echoHandlerBtn);
         Button jsRcvResponseTestBtn= (Button) findViewById(R.id.jsRcvResponseTestBtn);
-        webView.registerHandler("javaEchoToJs", new WVJBWebView.WVJBHandler() {
+        webView.getSettings().setUserAgentString(webView.getSettings().getUserAgentString() + " WebView/");
+        webView.registerHandler("default", new WVJBWebView.WVJBHandler() {
             @Override
             public void handler(Object data, WVJBWebView.WVJBResponseCallback callback) {
                 Toast.makeText(EchoActivity.this,data.toString(),LENGTH_SHORT).show();
@@ -55,16 +56,19 @@ public class EchoActivity extends AppCompatActivity {
             }
         });
 
-        webView.hasJavascriptMethod("echoHandler", new WVJBWebView.WVJBMethodExistCallback() {
+        webView.hasJavascriptMethod("resume", new WVJBWebView.WVJBMethodExistCallback() {
             @Override
             public void onResult(boolean exist) {
+                Log.d("wvjsblog", "Javascript handler 'resume' . " + exist);
                 if(exist) {
-                    Log.d("wvjsblog", "Javascript handler 'echoHandler' exist. ");
+                    Log.d("wvjsblog", "Javascript handler 'resume' exist. ");
                 }
             }
         });
 
-        webView.loadUrl("file:///android_asset/echo.html");
+        webView.loadUrl("https://res.vales.io/native-bridge/");
+//        webView.loadUrl("https://cjexpress.valesdev.com/invite");
+//        webView.loadUrl("file:///android_asset/echo.html");
 
     }
 }

@@ -21,11 +21,11 @@
 	}
 
 	setupWebViewJavascriptBridge(function(bridge) {
-		bridge.registerHandler('echoHandler', function(data, responseCallback) {
+		bridge.registerHandler('default', function(data, responseCallback) {
 			responseCallback(data)
 		})
 		bridge.registerHandler('jsRcvResponseTest', function(data, responseCallback) {
-			bridge.callHandler('javaEchoToJs', { foo:'bar' }, function(response) {
+			bridge.callHandler('default', { foo:'bar' }, function(response) {
 				if (response && response.foo == 'bar') {
 					responseCallback("Response from JS")
 				} else {

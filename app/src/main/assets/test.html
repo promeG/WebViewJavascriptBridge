@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no, email=no, address=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Native Bridge</title>
+</head>
+<body>
+<p>
+    <a href="javascript:void(invokeBridge('loaded', {}));">invokeBridge('loaded', {})</a>
+</p>
+
+<script type="application/javascript">
+      const setup = function (callback) {
+        if (window.WebViewJavascriptBridge) {
+          callback(window.WebViewJavascriptBridge)
+          return
+        }
+        if (window.WKWebViewJavascriptBridge) {
+          callback(window.WKWebViewJavascriptBridge)
+          return
+        }
+
+        if (window.WVJBCallbacks) {
+          window.WVJBCallbacks.push(callback)
+          return
+        }
+        if (window.WKWVJBCallbacks) {
+          window.WKWVJBCallbacks.push(callback)
+          return
+        }
+
+        window.WVJBCallbacks = window.WKWVJBCallbacks = [callback]
+
+        if (window.WKWebViewJavascriptBridge) {
+          window.webkit.messageHandlers.iOS_Native_InjectJavascript.postMessage(null)
+        } else {
+          const WVJBIframe = window.document.createElement('iframe')
+          WVJBIframe.style.display = 'none'
+          WVJBIframe.src = 'https://__bridge_loaded__'
+          window.document.documentElement.appendChild(WVJBIframe)
+          setTimeout(function () {
+            window.document.documentElement.removeChild(WVJBIframe)
+          }, 0)
+        }
+      }
+
+      setup(bridge => {
+        window.console.debug('[Native Bridge] initialized:', bridge)
+        bridge.disableJavscriptAlertBoxSafetyTimeout()
+
+        window.bridge = bridge
+      })
+
+      const invokeBridge = function (handler, params) {
+        window.console.debug('[Native Bridge] invoke:', handler, params)
+        window.bridge.callHandler('default', { handler: handler, params: params }, function (res) {
+          window.console.debug('[Native Bridge] response:', handler, res)
+        })
+      }
+    </script>
+</body>
+</html>
